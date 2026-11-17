@@ -23,7 +23,7 @@ Daily posts: [are.na channel — link TBD]
 | **Mon** | Introduction | [10 PRINT](01-10print/) · form groups |
 | **Tue** | Exercises | [Smalltalk toothpaste](02-smalltalk/) |
 | **Wed** | Exercises | [Breaking LLMs (Ollama)](03-ollama/) |
-| **Thu** | Exercises | [Hermes Agent](04-hermes/) · Instruction Swap |
+| **Thu** | Exercises | [Hermes Agent](04-hermes/) |
 | **Fri** | Ideation | [Ideation](05-ideation/) |
 | **Week 2** | Prototype | [Mon–Thu studio · Fri final presentations](06-prototype/) |
 

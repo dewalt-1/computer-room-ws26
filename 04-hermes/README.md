@@ -157,17 +157,6 @@ Try this one, small enough to check:
 Then read the tool calls rather than the answer. You are checking whether it opened the files
 at all, or whether it wrote you something plausible instead.
 
-## Instruction Swap
-
-1. Write a manual for something small you can do at the table: fold, stack, draw, assemble.
-2. Swap with another group. Follow their manual **exactly as written**. Film it.
-3. Give the same manual to Hermes, the most literal reader there is. What does it do, ask, assume?
-4. Revise your manual.
-
-## Hand it in
-
-Both versions of the manual, the video and the Hermes transcript (with the tool calls), on are.na.
-
 ## Keep this
 
 | | |
