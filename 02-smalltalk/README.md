@@ -8,9 +8,9 @@
 
 Smalltalk is a programming language with its own windows, menus and editor, made at Xerox PARC
 in California in the 1970s. Alan Kay led the research and designed most of the early versions,
-Dan Ingalls wrote most of the code and Adele Goldberg most of the documentation. They were after
-a personal computer that children could program. Kay called it the Dynabook. It stayed a
-model, so Smalltalk ran on the Xerox Alto instead.
+Dan Ingalls wrote most of the code and Adele Goldberg most of the documentation. They wanted
+to make a personal computer that children could program. Kay called it the Dynabook. It was never
+built, only as a model, and Smalltalk was used on the Xerox Alto instead.
 
 ![Xerox Alto](images/xerox-alto.jpg)
 
@@ -24,14 +24,14 @@ model, so Smalltalk ran on the Xerox Alto instead.
 [Marcin Wichary](https://commons.wikimedia.org/wiki/File:Alan_Kay_and_the_prototype_of_Dynabook,_pt._5_(3010032738).jpg),
 [CC BY 2.0](https://creativecommons.org/licenses/by/2.0), resized.*
 
-Overlapping windows and pop-up menus first appeared in Smalltalk. Steve Jobs came to see it in
-December 1979. Goldberg refused to show it to him until her managers made her, and soon Apple was
-building the Lisa and the Macintosh with windows and a mouse. The rest of the world read about
-Smalltalk in the August 1981 issue of *Byte*. Kay also came up with the term "object-oriented",
-and languages such as Python, Ruby and Java borrowed from Smalltalk.
+Smalltalk was the first system with overlapping windows and pop-up menus. Steve Jobs saw it at PARC
+in December 1979. Goldberg refused to show it to him, but her managers made her do it. Apple later
+sold the Lisa and the Macintosh, both with windows and a mouse. Most people first read about
+Smalltalk in the August 1981 issue of *Byte*. Kay also invented the term "object-oriented".
+Python, Ruby and Java were influenced by Smalltalk.
 
-We use it because nothing in it is locked. The windows and menus are written in the same code you
-will be writing, and you can change them while they are running.
+We use Smalltalk because all of its code can be read and changed. The windows and menus are written
+in Smalltalk too, and you can change them while the system is running.
 
 To look at: [*Byte*, August 1981](https://archive.org/details/byte-magazine-1981-08) ·
 [Alan Kay, "The Early History of Smalltalk"](https://worrydream.com/EarlyHistoryOfSmalltalk/) ·
@@ -112,8 +112,8 @@ Drag over a number, type a new one, **select all**, **run**.
 
 ## Basic syntax
 
-First you name an object, then you send it a message. Paste this, click on a line and press
-**Cmd P** (Windows: **Ctrl P**). Squeak prints the answer underneath.
+Write the name of an object, then a message to that object. Paste this, click on a line and press
+**Cmd P** (Windows: **Ctrl P**). The answer is printed underneath.
 
 ```smalltalk
 3 + 4                   "send + 4 to the number 3: 7"
@@ -124,7 +124,7 @@ First you name an object, then you send it a message. Paste this, click on a lin
 
 'hello' size            "text goes in single quotes: 5"
 
-3 max: 9                "a colon means a value follows: 9"
+3 max: 9                "write a value after the colon: 9"
 
 50 atRandom             "a random number from 1 to 50"
 
@@ -135,31 +135,71 @@ A variable and a choice. Select all, then Cmd P:
 
 ```smalltalk
 | x |                   "make a variable"
-x _ 5.                  "put 5 in it. the full stop ends the line"
+x _ 5.                  "put 5 in it. end with a full stop"
 x > 3 ifTrue: ['big'] ifFalse: ['small']
 ```
 
 | | |
 |---|---|
-| `"text"` | comment, Squeak ignores it |
+| `"text"` | a comment, for people reading the code |
 | `'text'` | text |
-| `_` | put a value into a variable (Squeak draws it as an arrow) |
+| `_` | put a value into a variable (shown as an arrow in Squeak) |
 | `.` | end of a statement |
 | `;` | another message to the same object: `pen go: 100; turn: 90` |
 | `750 @ 400` | a point on the screen, x and y |
 
+## Objects
+
+Names with a capital letter are objects that come with Squeak.
+
+| Object | What it is | Examples |
+|---|---|---|
+| `Display` | the whole screen, windows included | `Display width` the width of the screen in pixels |
+| `Sensor` | the mouse (and the keyboard) | `Sensor cursorPoint` where the mouse is<br>`Sensor redButtonPressed` true while the left button is pressed<br>`Sensor yellowButtonPressed` true while the right button is pressed<br>`Sensor waitButton` wait for a click |
+| `Form` | a picture made of pixels | `Form dotOfSize: 30` a round dot<br>`Form fromDisplay: ...` a copy of a piece of the screen |
+| `Color` | a colour | `Color red`, `Color blue`, `Color random`<br>`Color red wheel: 20` a list of 20 colours |
+| `Pen` | a pen for drawing lines | `pen place: 750 @ 400` move the pen to a point without drawing<br>`pen go: 100` draw a line 100 pixels long<br>`pen turn: 90` turn the pen 90 degrees<br>`pen goto: ...` draw a line to a point<br>`pen defaultNib: 3` line width |
+| `BitBlt` | a fast way to copy pixels, used in toothpaste (pronounced "bit blit") | `brush copyForm: ball to: point ...` |
+| `OrderedCollection` | a list | `trail addLast: x` add to the end<br>`trail removeFirst` take from the front |
+| `Delay` | a pause | `(Delay forMilliseconds: 50) wait` |
+
+Names with a small letter (`ball`, `size`, `trail`) are variables. They are listed between two bars
+at the top of the program: `| ball size trail |`.
+
+These are the drawing instructions, part by part:
+
+```smalltalk
+ball displayOn: Display                  "draw the ball on the screen"
+	at: Sensor cursorPoint               "where the mouse is"
+	clippingBox: Display boundingBox     "stay inside the screen"
+	rule: Form paint                     "cover what is already there"
+	fillColor: Color red                 "in this colour"
+```
+
+With `Form paint` the new colour covers the old one. With `Form reverse` and `Form under` the two
+colours are mixed. Some mixes are invisible, for example red on grey.
+
+Loops and choices:
+
+| Code | Meaning |
+|---|---|
+| `36 timesRepeat: [ ... ]` | do it 36 times |
+| `1 to: 100 do: [:i \| ... ]` | do it 100 times, with `i` = 1, 2, 3 ... |
+| `[ ... ] whileFalse: [ ... ]` | repeat until the first part is true |
+| `... ifTrue: [ ... ] ifFalse: [ ... ]` | if yes, do this. if no, do that |
+
 ## Clean the screen
 
-Hold on the grey, move to **restore display**, let go. Stay away from **quit**.
+Hold on the grey, move to **restore display**, let go. Don't let go on **quit**.
 
 ![restore display](images/6-clean.png)
 
 ## If it breaks
 
-- **Text appears inside your code:** Squeak found a mistake there. Select all and paste the code again.
-- **A menu or a new window pops up:** choose **cancel**, or click the small box at the top left of the window.
+- **You see new text inside your code:** there is a mistake at that place. Select all and paste the code again.
+- **You see a menu or a new window:** choose **cancel**, or click the small box at the top left of the window.
 - **Nothing works:** reload the page and paste again.
-- Don't use the arrow keys, they type invisible characters.
+- Don't use the arrow keys. In Squeak 1.1 they add invisible characters to your code.
 
 ## More programs
 
@@ -243,7 +283,7 @@ ball _ Form dotOfSize: 20.
 ### Late brush
 
 ```smalltalk
-"LATE BRUSH: draws one second after you"
+"LATE BRUSH: the line is drawn one second later"
 | ball trail |
 ball _ Form dotOfSize: 20.
 trail _ OrderedCollection new.
@@ -269,7 +309,7 @@ trail _ OrderedCollection new.
 ### Smear
 
 ```smalltalk
-"SMEAR: drags the screen itself, windows too"
+"SMEAR: smear the screen, windows too"
 | corner piece |
 [Sensor yellowButtonPressed] whileFalse: [
 	Sensor redButtonPressed ifTrue: [
@@ -303,7 +343,7 @@ pen defaultNib: 1.                        "line width"
 ### Star
 
 ```smalltalk
-"STAR: draws by itself"
+"STAR: no mouse needed"
 | pen |
 pen _ Pen new.
 pen defaultNib: 3.              "line width"
@@ -319,14 +359,14 @@ pen place: 750 @ 450.           "where to start"
 ### Spiral
 
 ```smalltalk
-"SPIRAL: draws by itself"
+"SPIRAL: no mouse needed"
 | pen |
 pen _ Pen new.
 pen defaultNib: 2.
 pen place: 750 @ 400.
-1 to: 100 do: [:i |             "i counts from 1 to 100"
+1 to: 100 do: [:i |             "repeat with i = 1, 2, 3 ... 100"
 	pen color: Color random.
-	pen go: i * 4.              "each line a bit longer"
+	pen go: i * 4.              "make each line a bit longer"
 	pen turn: 89]               "try 90, 121, 144"
 ```
 
