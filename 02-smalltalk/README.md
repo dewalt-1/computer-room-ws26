@@ -2,160 +2,347 @@
 
 [← Day 1: 10 PRINT](../01-10print/README.md) · [Schedule](../README.md) · Next: [Day 3: Ollama →](../03-ollama/README.md)
 
-**Open:** https://dewalt-1.github.io/smalltalk-room/
+**Open in Chrome:** https://dewalt-1.github.io/smalltalk-room/
 
-Smalltalk-80 was built at Xerox PARC in the 1970s by Alan Kay, Dan Ingalls, Adele Goldberg
-and others, for a computer that its users could read and change all the way down. Every
-window, menu and line of the system is open while it runs. This is Squeak 1.1 (1996, Apple's
-direct descendant of Smalltalk-80) running in the browser through
-[SqueakJS](https://squeak.js.org). Background: *Byte* magazine, August 1981, the Smalltalk issue.
+## What is Smalltalk?
 
-The first visit downloads about 4 MB. Wait for the grey screen.
+Smalltalk is a programming language with its own windows, menus and editor, made at Xerox PARC
+in California in the 1970s. Alan Kay led the research and designed most of the early versions,
+Dan Ingalls wrote most of the code and Adele Goldberg most of the documentation. They were after
+a personal computer that children could program. Kay called it the Dynabook. It stayed a
+model, so Smalltalk ran on the Xerox Alto instead.
 
-## The mouse
+![Xerox Alto](images/xerox-alto.jpg)
 
-| You do | Smalltalk calls it | Used for |
+*Xerox Alto with a three-button mouse and, on the left, a chord keyboard. Photo:
+[Michael Hicks](https://commons.wikimedia.org/wiki/File:Xerox_Alto_with_mouse_and_chorded_keyset_-_Computer_History_Museum.jpg),
+[CC BY 2.0](https://creativecommons.org/licenses/by/2.0), resized.*
+
+![Alan Kay holding a model of the Dynabook](images/alan-kay-dynabook.jpg)
+
+*Alan Kay with the Dynabook model, 2008. Photo:
+[Marcin Wichary](https://commons.wikimedia.org/wiki/File:Alan_Kay_and_the_prototype_of_Dynabook,_pt._5_(3010032738).jpg),
+[CC BY 2.0](https://creativecommons.org/licenses/by/2.0), resized.*
+
+Overlapping windows and pop-up menus first appeared in Smalltalk. Steve Jobs came to see it in
+December 1979. Goldberg refused to show it to him until her managers made her, and soon Apple was
+building the Lisa and the Macintosh with windows and a mouse. The rest of the world read about
+Smalltalk in the August 1981 issue of *Byte*. Kay also came up with the term "object-oriented",
+and languages such as Python, Ruby and Java borrowed from Smalltalk.
+
+We use it because nothing in it is locked. The windows and menus are written in the same code you
+will be writing, and you can change them while they are running.
+
+To look at: [*Byte*, August 1981](https://archive.org/details/byte-magazine-1981-08) ·
+[Alan Kay, "The Early History of Smalltalk"](https://worrydream.com/EarlyHistoryOfSmalltalk/) ·
+[scanned Smalltalk textbooks](http://stephane.ducasse.free.fr/FreeBooks.html) ·
+[Smalltalk on the Alto](https://commons.wikimedia.org/wiki/File:Alto-smalltalk.png) ·
+[the Smalltalk balloon](https://commons.wikimedia.org/wiki/File:Smalltalk_Balloon.svg)
+
+| | Mac | Windows |
 |---|---|---|
-| Left button | red | select, click, draw |
-| Right button | yellow | text menu: do it, print it, accept |
-| Cmd-click / Option-click | blue | window menu: close, move, resize |
+| Paste | Cmd V | Ctrl V |
+| Select all | Cmd A | Ctrl A |
+| **Run** | **Cmd D** | **Ctrl D** |
+| Print the answer | Cmd P | Ctrl P |
+| **Stop** | **right-click** | **right-click** |
 
-Menus only stay open while you hold the button. Hold, move to the item, release.
+## 1. Open a workspace
 
-## Run it
+Hold the mouse on the grey, move to **open…**, let go. Then click **open workspace**.
 
-1. Hold the mouse on the grey background → **open…** → **workspace**.
-2. Type:
-   ```smalltalk
-   Form toothpaste: 30
-   ```
-3. Select the line, press **Cmd-D** (or right-click → **do it**).
-4. Draw with the left button. **Right-click** to stop.
+![open a workspace](images/1-open.png)
 
-For black and white, run `Display newDepth: 1` first.
+## 2. Paste the code
 
-## Read it
-
-Open the code: background menu → **open…** → **browser**. Click, from left to right:
-**Graphics-Display Objects** → **Form** → the **class** button under the list →
-**examples** → **toothpaste:**.
+Copy this. Click in the yellow window. Paste. If Chrome asks, allow it.
 
 ```smalltalk
-toothpaste: diam
-	"Draws wormlike lines by laying down images of spheres.
-	See Ken Knowlton, Computer Graphics, vol. 15 no. 4 p352."
-	...
-	colors _ Display depth = 1
-		ifTrue: [Array with: Color black]
-		ifFalse: [Color red wheel: 20].
-	...
-	queue _ SharedQueue new: 32.
-	16 timesRepeat: [queue nextPut: -20@-20].
-	...
-	filter _ filter * 4 + Sensor cursorPoint // 5.
-	...
-	port copyForm: ball to: point rule: Form paint
-		fillColor: (colors atWrap: color*9).
+"TOOTHPASTE"
+| size colors ball n shine brush trail mouse point |
+size _ 30.                         "how thick"
+colors _ Color red wheel: 20.      "20 colours, starting at red"
+ball _ Form dotOfSize: size.       "the ball"
+n _ 1.                             "which line we are on"
+shine _ Form extent: size@size offset: (size // -2) asPoint.
+#(5 1 2 3) with: #(veryLightGray black gray lightGray) do: [:i :grey |
+	(Form dotOfSize: i * size // 5) displayOn: shine   "4 grey dots"
+		at: (size * (i = 5 ifTrue: [5] ifFalse: [4]) // 10) asPoint
+		clippingBox: shine boundingBox
+		rule: Form under fillColor: (Color perform: grey)].
+[Sensor waitButton. Sensor yellowButtonPressed] whileFalse: [
+	brush _ BitBlt toForm: Display.                    "a new line"
+	brush colorMap: (Bitmap with: 0 with: 16rFFFFFFFF).
+	mouse _ Sensor cursorPoint.
+	trail _ OrderedCollection new.
+	16 timesRepeat: [trail addLast: -50 @ -50].
+	[trail isEmpty] whileFalse: [
+		mouse _ mouse * 4 + Sensor cursorPoint // 5.    "follow the mouse"
+		point _ Sensor redButtonPressed ifTrue: [mouse] ifFalse: [-50 @ -50].
+		brush copyForm: ball to: point rule: Form paint   "draw the ball"
+			fillColor: (colors atWrap: n * 9).
+		brush copyForm: shine to: trail removeFirst rule: Form erase.   "shine"
+		Sensor redButtonPressed ifTrue: [trail addLast: point]].
+	n _ n + 1]. [Sensor anyButtonPressed] whileTrue
 ```
 
-| Piece | What it does |
+![paste](images/2-paste.png)
+
+## 3. Run it
+
+**Select all**, then **Run**. Drag on the grey to draw. Right-click to stop.
+
+![draw](images/3-draw.png)
+
+## 4. Change it
+
+Drag over a number, type a new one, **select all**, **run**.
+
+![edit](images/4-edit.png)
+
+![result](images/5-edited.png)
+
+| Change | Try |
 |---|---|
-| `diam` | the size of the ball, the `30` you typed |
-| `_` | assignment (shows as ← in Smalltalk) |
-| `Color red wheel: 20` | 20 colours around the colour wheel, starting at red |
-| `16 timesRepeat:` | the worm's length: 16 balls are drawn, and the oldest is erased |
-| `filter * 4 + Sensor cursorPoint // 5` | smooths the mouse: each new point is 4/5 old position, 1/5 new |
-| `Form paint` / `Form erase` | how the ball is combined with the screen |
+| `size _ 30` | `8`, `90` |
+| `Color red wheel: 20` | `Color blue wheel: 3` |
+| `n * 9` | `n` |
+| `mouse * 4 + Sensor cursorPoint // 5` | `mouse * 19 + Sensor cursorPoint // 20` |
+| `rule: Form paint` | `rule: Form reverse` |
 
-## Change it
+## Basic syntax
 
-Edit the text in the browser, then right-click → **accept** (Cmd-S) and run it again.
+First you name an object, then you send it a message. Paste this, click on a line and press
+**Cmd P** (Windows: **Ctrl P**). Squeak prints the answer underneath.
 
-- A bigger or smaller brush: `Form toothpaste: 80`
-- Fewer, other colours: `Color blue wheel: 3`
-- A longer worm: `16 timesRepeat:` → `60 timesRepeat:` (and `SharedQueue new: 128`)
-- A lazier brush: `filter * 19 + Sensor cursorPoint // 20`
-- A different mark: `Form paint` → `Form reverse`
-- Everything else in the class: browse **Form** → class → **examples** for more.
+```smalltalk
+3 + 4                   "send + 4 to the number 3: 7"
 
-If you break it: right-click in the method → **cancel** before accepting, or undo your edit.
+2 + 3 * 4               "always left to right: 20"
+
+2 + (3 * 4)             "round brackets go first: 14"
+
+'hello' size            "text goes in single quotes: 5"
+
+3 max: 9                "a colon means a value follows: 9"
+
+50 atRandom             "a random number from 1 to 50"
+
+(1 to: 5) collect: [:i | i * i]     "square brackets: code for later"
+```
+
+A variable and a choice. Select all, then Cmd P:
+
+```smalltalk
+| x |                   "make a variable"
+x _ 5.                  "put 5 in it. the full stop ends the line"
+x > 3 ifTrue: ['big'] ifFalse: ['small']
+```
+
+| | |
+|---|---|
+| `"text"` | comment, Squeak ignores it |
+| `'text'` | text |
+| `_` | put a value into a variable (Squeak draws it as an arrow) |
+| `.` | end of a statement |
+| `;` | another message to the same object: `pen go: 100; turn: 90` |
+| `750 @ 400` | a point on the screen, x and y |
+
+## Clean the screen
+
+Hold on the grey, move to **restore display**, let go. Stay away from **quit**.
+
+![restore display](images/6-clean.png)
+
+## If it breaks
+
+- **Text appears inside your code:** Squeak found a mistake there. Select all and paste the code again.
+- **A menu or a new window pops up:** choose **cancel**, or click the small box at the top left of the window.
+- **Nothing works:** reload the page and paste again.
+- Don't use the arrow keys, they type invisible characters.
+
+## More programs
+
+Select all, paste a new one over it, select all, run.
+
+### Simple brush
+
+```smalltalk
+"SIMPLE BRUSH"
+| ball |
+ball _ Form dotOfSize: 30.                       "size"
+
+[Sensor yellowButtonPressed] whileFalse: [       "until right-click"
+	Sensor redButtonPressed ifTrue: [            "while you drag"
+		ball displayOn: Display
+			at: Sensor cursorPoint               "where"
+			clippingBox: Display boundingBox
+			rule: Form paint
+			fillColor: Color red]].               "colour"
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Simple brush](images/01simple.png)
+
+### Confetti
+
+```smalltalk
+"CONFETTI"
+| ball spot |
+[Sensor yellowButtonPressed] whileFalse: [
+	Sensor redButtonPressed ifTrue: [
+		ball _ Form dotOfSize: 20 atRandom.      "random size, 1 to 20"
+		spot _ (100 atRandom - 50) @ (100 atRandom - 50).   "spread"
+		ball displayOn: Display
+			at: Sensor cursorPoint + spot
+			clippingBox: Display boundingBox
+			rule: Form paint
+			fillColor: Color random]].            "random colour"
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Confetti](images/02confetti.png)
+
+### Mirror
+
+```smalltalk
+"MIRROR"
+| ball mouse |
+ball _ Form dotOfSize: 20.
+[Sensor yellowButtonPressed] whileFalse: [
+	Sensor redButtonPressed ifTrue: [
+		mouse _ Sensor cursorPoint.
+
+		"your line"
+		ball displayOn: Display at: mouse
+			clippingBox: Display boundingBox
+			rule: Form paint fillColor: Color blue.
+
+		"the mirrored line"
+		ball displayOn: Display at: (Display width - mouse x) @ mouse y
+			clippingBox: Display boundingBox
+			rule: Form paint fillColor: Color red]].
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Mirror](images/03mirror.png)
+
+### Words
+
+```smalltalk
+"WORDS"
+[Sensor yellowButtonPressed] whileFalse: [
+	Sensor redButtonPressed ifTrue: [
+		'computer room' displayAt: Sensor cursorPoint.   "your text"
+		(Delay forMilliseconds: 50) wait]].               "pause between words"
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Words](images/04words.png)
+
+### Late brush
+
+```smalltalk
+"LATE BRUSH: draws one second after you"
+| ball trail |
+ball _ Form dotOfSize: 20.
+trail _ OrderedCollection new.
+[Sensor yellowButtonPressed] whileFalse: [
+
+	"remember where the mouse is"
+	Sensor redButtonPressed
+		ifTrue: [trail addLast: Sensor cursorPoint]
+		ifFalse: [trail addLast: -50 @ -50].
+
+	"draw where it was 100 steps ago"
+	trail size > 100 ifTrue: [
+		ball displayOn: Display at: trail removeFirst
+			clippingBox: Display boundingBox
+			rule: Form paint fillColor: Color green].
+
+	(Delay forMilliseconds: 10) wait].
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Late brush](images/05late.png)
+
+### Smear
+
+```smalltalk
+"SMEAR: drags the screen itself, windows too"
+| corner piece |
+[Sensor yellowButtonPressed] whileFalse: [
+	Sensor redButtonPressed ifTrue: [
+		corner _ Sensor cursorPoint - 40.
+		piece _ Form fromDisplay: (corner extent: 80 @ 80).  "copy a square"
+		piece displayAt: corner + (4 @ 4).           "put it back, moved"
+		(Delay forMilliseconds: 20) wait]].
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Smear](images/06smear.png)
+
+### Web
+
+```smalltalk
+"WEB: lines from one point to your mouse"
+| pen |
+pen _ Pen new.
+pen defaultNib: 1.                        "line width"
+[Sensor yellowButtonPressed] whileFalse: [
+	Sensor redButtonPressed ifTrue: [
+		pen color: Color random.          "colour"
+		pen place: 750 @ 400.             "start here"
+		pen goto: Sensor cursorPoint.     "draw to the mouse"
+		(Delay forMilliseconds: 20) wait]].
+[Sensor anyButtonPressed] whileTrue
+```
+
+![Web](images/07web.png)
+
+### Star
+
+```smalltalk
+"STAR: draws by itself"
+| pen |
+pen _ Pen new.
+pen defaultNib: 3.              "line width"
+pen color: Color magenta.       "colour"
+pen place: 750 @ 450.           "where to start"
+36 timesRepeat: [               "how many lines"
+	pen go: 250.                "how long"
+	pen turn: 170]              "how far to turn, in degrees"
+```
+
+![Star](images/08star.png)
+
+### Spiral
+
+```smalltalk
+"SPIRAL: draws by itself"
+| pen |
+pen _ Pen new.
+pen defaultNib: 2.
+pen place: 750 @ 400.
+1 to: 100 do: [:i |             "i counts from 1 to 100"
+	pen color: Color random.
+	pen go: i * 4.              "each line a bit longer"
+	pen turn: 89]               "try 90, 121, 144"
+```
+
+![Spiral](images/09spiral.png)
 
 ## Write your own
 
-### Your own brush
-
-Copy toothpaste into a new method: change the first line to a new name, e.g.
-`myBrush: diam`, then accept. Smalltalk makes a new method next to the old one, and you
-run it with `Form myBrush: 30`. Then change what it does:
-
-| Change | Replace / add |
-|---|---|
-| **Random colours** | `ifFalse: [Color red wheel: 20]` → `ifFalse: [(1 to: 20) collect: [:i \| Color random]]` |
-| **A mirror** | after the `port copyForm: ball to: point …` line, add a second one with `to: (Display width - point x) @ point y`. Why is the mirrored side never erased? |
-| **A stamp instead of a ball** | replace the `port copyForm: ball …` line with `'hello' displayAt: point.` |
-| **A shaky hand** | after the line that ends `ifFalse: [-20@-20].`, add `point _ point + ((20 atRandom - 10) @ (20 atRandom - 10)).` |
-| **No erasing** | delete the line `port copyForm: facade to: q rule: Form erase.` |
-
-Run your brush with `Display restoreAfter: [Form myBrush: 30]`: when you right-click to stop,
-the screen is cleaned up. If a menu opens after the right-click, move off it and let go.
-
-### A turtle
-
-Smalltalk also has a **Pen**: a turtle that draws as it moves (from Seymour Papert's Logo).
-Try these in a workspace, one at a time:
-
-```smalltalk
-Pen example
-```
-
-```smalltalk
-Display restoreAfter: [Pen new spiral: 200 angle: 89]
-```
-
-```smalltalk
-Display restoreAfter: [Pen new hilberts: 5]
-```
-
-```smalltalk
-Display restoreAfter: [Pen new web]
-```
-
-(`web` draws while you drag the mouse; right-click to stop.)
-
-Now write your own: `go:` moves forward, `turn:` turns by degrees, `defaultNib:` sets the width.
-
-```smalltalk
-| p |
-p _ Pen new.
-p defaultNib: 3.
-1 to: 36 do: [:i | p go: 100; turn: 170]
-```
-
-A pen that follows the mouse until you right-click:
-
-```smalltalk
-| p |
-p _ Pen new.
-[Sensor yellowButtonPressed] whileFalse: [p goto: Sensor cursorPoint]
-```
-
-Pens draw over windows. To clean up, hold the mouse on the grey background →
-**restore display**.
-
-### More to read and change
-
-In the browser, look at **Pen** → **geometric designs** (`dragon:`, `hilbert:side:`,
-`mandala:diameter:`) and **Form** → class → **examples** (`xorHack:`, `exampleSketch`).
-Every one of them can be opened, read and changed the same way.
+Mix two of these, or make a brush that is hard to use.
 
 ## Hand it in
 
-In the method list, right-click your method → **fileOut**. Then click the small **files**
-button in the bottom right corner of the page and download the `.st` file.
-Post it to are.na with a screenshot.
+Select all, copy (Cmd C / Ctrl C), and post your code to are.na with a screenshot.
 
-Note: your changes are saved in this browser only. Clearing site data deletes them.
+## About
 
-## Code
-
-The Smalltalk room is its own repository: [dewalt-1/smalltalk-room](https://github.com/dewalt-1/smalltalk-room).
+Squeak 1.1 (1996), a direct descendant of Smalltalk-80 from Xerox PARC, running in
+[SqueakJS](https://squeak.js.org). The original program is inside it: run
+`Form toothpaste: 30. [Sensor anyButtonPressed] whileTrue`.
+Code of the room: [dewalt-1/smalltalk-room](https://github.com/dewalt-1/smalltalk-room).
