@@ -43,17 +43,48 @@ To look at: [*Byte*, August 1981](https://archive.org/details/byte-magazine-1981
 |---|---|---|
 | Paste | Cmd V | Ctrl V |
 | Select all | Cmd A | Ctrl A |
-| **Run** | **Cmd D** | **Ctrl D** |
+| **Run** ("do it") | **Cmd D** | **Ctrl D** |
 | Print the answer | Cmd P | Ctrl P |
 | **Stop** | **right-click** | **right-click** |
 
-## 1. Open a workspace
+## 1. Try toothpaste
+
+Open a workspace: hold the mouse on the grey, move to **open…**, let go. Then click **open workspace**.
+
+![open a workspace](images/1-open.png)
+
+Click in the yellow window and type:
+
+```smalltalk
+Display newDepth: 1.
+Form toothpaste: 30.
+[Sensor anyButtonPressed] whileTrue
+```
+
+| Line | Meaning |
+|---|---|
+| `Display newDepth: 1` | black and white screen |
+| `Form toothpaste: 30` | start toothpaste, 30 pixels thick |
+| `[Sensor anyButtonPressed] whileTrue` | wait until the mouse button is released |
+
+Press **Cmd A** to select all, then **Cmd D** to run (Windows: **Ctrl A**, **Ctrl D**).
+Or hold the right mouse button in the window and let go on **do it**.
+
+![type the code](images/0-type.png)
+
+Drag on the grey to draw. Right-click to stop.
+
+![toothpaste in black and white](images/0-draw.png)
+
+Reload the page to get colour again.
+
+## 2. Open a workspace
 
 Hold the mouse on the grey, move to **open…**, let go. Then click **open workspace**.
 
 ![open a workspace](images/1-open.png)
 
-## 2. Paste the code
+## 3. Paste the code
 
 Copy this. Click in the yellow window. Paste. If Chrome asks, allow it.
 
@@ -88,15 +119,16 @@ shine _ Form extent: size@size offset: (size // -2) asPoint.
 
 ![paste](images/2-paste.png)
 
-## 3. Run it
+## 4. Run it
 
-**Select all**, then **Run**. Drag on the grey to draw. Right-click to stop.
+Press **Cmd A** to select all, then **Cmd D** to run (Windows: **Ctrl A**, **Ctrl D**).
+Drag on the grey to draw. Right-click to stop.
 
 ![draw](images/3-draw.png)
 
-## 4. Change it
+## 5. Change it
 
-Drag over a number, type a new one, **select all**, **run**.
+Drag over a number and type a new one. Press **Cmd A**, then **Cmd D** (Windows: **Ctrl A**, **Ctrl D**).
 
 ![edit](images/4-edit.png)
 
@@ -203,7 +235,7 @@ Hold on the grey, move to **restore display**, let go. Don't let go on **quit**.
 
 ## More programs
 
-Select all, paste a new one over it, select all, run.
+Select all and paste a new program over the old one. Select all again and run it.
 
 ### Simple brush
 
