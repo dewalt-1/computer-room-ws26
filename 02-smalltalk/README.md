@@ -142,6 +142,35 @@ Drag over a number and type a new one. Press **Cmd A**, then **Cmd D** (Windows:
 | `mouse * 4 + Sensor cursorPoint // 5` | `mouse * 19 + Sensor cursorPoint // 20` |
 | `rule: Form paint` | `rule: Form reverse` |
 
+### Other shapes
+
+Replace `ball _ Form dotOfSize: size.` with one of these:
+
+| Shape | Code |
+|---|---|
+| Square | `ball _ Form extent: 30@30. ball fillBlack.` |
+| Thin bar | `ball _ Form extent: 4@60. ball fillBlack.` |
+| Cursor | `ball _ Cursor wait magnify: (0@0 extent: 16@16) by: 4@4.` |
+| Word | `ball _ 'hello' asDisplayText form.` |
+| Letter | `ball _ (TextStyle default fontAt: 1) characterFormAt: $A. ball _ ball magnify: ball boundingBox by: 4@4.` |
+| Star | `ball _ Form extent: 60@60. (Pen newOnForm: ball) place: 30@55; spiral: 50 angle: 144.` |
+
+Change more:
+
+| Change | Code |
+|---|---|
+| Put the shape under the mouse pointer | add `ball offset: (0@0) - (ball extent // 2).` after the new line |
+| No shine, and a pause between shapes | replace `brush copyForm: shine to: trail removeFirst rule: Form erase.` with `trail removeFirst. (Delay forMilliseconds: 300) wait.` |
+| More space between shapes | replace `mouse _ mouse * 4 + Sensor cursorPoint // 5.` with `mouse _ Sensor cursorPoint.` |
+| Other cursors | replace `wait` with `normal`, `read`, `write`, `execute`, `crossHair`, `menu` or `move` |
+
+To find more, run one of these lines. A code browser is opened with the list on the right:
+
+| List | Code |
+|---|---|
+| Ways to make a Form | `BrowserView browseFullForClass: Form class method: #dotOfSize:` |
+| Cursors | `BrowserView browseFullForClass: Cursor class method: #wait` |
+
 ## Basic syntax
 
 Write the name of an object, then a message to that object. Paste this, click on a line and press
