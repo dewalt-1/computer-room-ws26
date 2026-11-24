@@ -22,20 +22,19 @@ on a Windows machine, type this in PowerShell:
 irm https://ollama.com/install.ps1 | iex
 ```
 
-Now, lets run a model. Open Terminal or PowerShell and type:
+Now, let's run a model. Open Terminal or PowerShell and type:
 ``` bash
-ollama run tinyllama
+ollama run mistral
 ```
 
-Ollama will now download and run Mistral, an open source LLM, locally on your machine. This is a basic chat style application to test LLMs. Why Ollama? It is an extremely basic inference engine for LLMs that offers us basic options for inference and research. We're going to use a little known function to alter the LLMs system prompt in order to confuse and break the locally hosted LLM we will work with.
+Ollama will now download and run Mistral, an open source LLM, locally on your machine. This is a basic chat style application to test LLMs. Why Ollama? It is an extremely basic inference engine for LLMs that offers us basic options for inference and research. We're going to use a little known function to alter the LLM's system prompt in order to confuse and break the locally hosted LLM we will work with.
 
 ------
 ## Attention and Tokenization
-While the model is being downloaded, lets look at how LLMs interpret language. We're not going to deep dive into LLMs in this workshop, but the most important elements we will work with is attention and tokenization.
+While the model is being downloaded, let's look at how LLMs interpret language. We're not going to deep dive into LLMs in this workshop, but the most important elements we will work with is attention and tokenization.
 
 ### Attention
 attention describes the ability of a model to pay attention to the important parts of a sentence (or image, or any other sequential input). It does this by assigning weights to input features based on their importance and their position in the sequence
-![[Screenshot 2026-02-17 at 12.29.27.png]]
 
 ### Tokenization
 Tokenization is the foundational process that allows LLMs to break down human language into digestible pieces called tokens. This transformation is essential as it translates complex language into structured units that the model can interpret, enabling it to “understand” and respond to various linguistic inputs
@@ -53,11 +52,9 @@ When tokenizing this sentence, we break it into smaller pieces called tokens. Th
 ### Inference
 When you prompt an LLM, the model processes your query token by token, predicting the next likely word or phrase in a sequence based on patterns it learned during training. Unlike training, which is a one-time, resource-intensive process, inference happens repeatedly, often in real-time, as users interact with the model.
 
-![[Pasted image 20260217131830.png]]
-
 ----
 ## Basic inference
-lets try out our new model, in terminal, start a conversation with Mistral. In your terminal ,type in a question.
+let's try out our new model, in terminal, start a conversation with Mistral. In your terminal, type in a question.
 
 you can exit the conversation and return to your terminal by typing
 ``` bash
@@ -65,15 +62,15 @@ you can exit the conversation and return to your terminal by typing
 ```
 
 # Breaking LLMs
-in this workshop, we'll use a method to past a system prompt on top of our downloaded model, in order to change the way that model behaves. 
+in this workshop, we'll use a method to paste a system prompt on top of our downloaded model, in order to change the way that model behaves. 
 
 ## System prompt
-Your prompting of the LLM is what is know as the "user prompt". The instruction a user gives an LLM to trigger inference. A system prompt is a set of rules and instructions that determines how the user prompt is interpreted and answered.
+Your prompting of the LLM is what is known as the "user prompt". The instruction a user gives an LLM to trigger inference. A system prompt is a set of rules and instructions that determines how the user prompt is interpreted and answered.
 
-To break or LLM, we will create diverse system prompts to make the LLM interpret our prompts in weird, unexpected ways. 
+To break our LLM, we will create diverse system prompts to make the LLM interpret our prompts in weird, unexpected ways. 
 
-To make this system prompt in Ollama, we'll create a modfile, and bake it unto our LLM (in this case, Mistral)
-# Make a modefile 
+To make this system prompt in Ollama, we'll create a Modelfile, and bake it onto our LLM (in this case, Mistral)
+# Make a Modelfile 
 Create a working folder somewhere in your machine and cd into it. Then, in terminal, type:
 
 ```bash
@@ -83,26 +80,37 @@ nano your_model_name
 
 This will open nano, a basic text editor in our terminal.
 
-in nano:
+On a Windows machine, type this in PowerShell instead. It will open Notepad:
+``` powershell
+notepad your_model_name.txt
+```
+
+in nano (or Notepad):
 ```bash
 #sets the model to work with
-FROM Mistral
+FROM mistral
 
 # sets a custom system message to specify the behavior of the model
 SYSTEM You are Mario from super mario bros, acting as an assistant.
 ```
-Control + X, Y to save and then enter
+Control + X, Y to save and then enter (in Notepad: Control + S, then close it)
 
 then, in terminal:
 ``` bash
-ollama create your_model_name -f location of the file e.g. ./your_model_name
+ollama create your_model_name -f ./your_model_name
+ollama run your_model_name
+```
+
+on a Windows machine:
+``` powershell
+ollama create your_model_name -f ./your_model_name.txt
 ollama run your_model_name
 ```
 
 Now, Ollama will create a new model, based on our new system prompt.
-\
+
 ## Going further
-now, lets add Parameters, these help us changethe model inference
+now, let's add Parameters, these help us change the model inference
 
 ``` bash
 PARAMETER <parameter> <parametervalue>
@@ -110,7 +118,7 @@ PARAMETER <parameter> <parametervalue>
 
  For example:
 ```bash
-FROM Mistral
+FROM mistral
 # sets the temperature to 1 [higher is more creative, lower is more coherent]
 PARAMETER temperature 1.0 
 # sets the context window size to 4096, this controls how many tokens the LLM can use as context to generate the next token
@@ -119,19 +127,19 @@ PARAMETER num_ctx 4096
 # sets a custom system message to specify the behavior of the chat assistant
 SYSTEM You are Mario from super mario bros, acting as an assistant.
 ```
-Control + X, Y to save and then enter
+Control + X, Y to save and then enter (in Notepad: Control + S, then close it)
 
 In this workshop, we will work with these parameters (although there are a lot more):
 
 | Parameter   | Description                                                                                                                                                                             | Value Type | Example Usage   |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------- |
-| num_ctx     | Sets the size of the context window used to generate the next token. (Default: 2048)                                                                                                    | int        | num_ctx 4096    |
+| num_ctx     | Sets the size of the context window used to generate the next token. (Default: 4096 on most laptops)                                                                                                    | int        | num_ctx 4096    |
 | temperature | The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.8)                                                                     | float      | temperature 0.7 |
 | top_k       | Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)        | int        | top_k 40        |
 | top_p       | Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9) | float      | top_p 0.9       |
 
 # install ollama on RPI
-interminal type:
+in terminal type:
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
